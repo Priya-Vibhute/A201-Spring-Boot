@@ -5,17 +5,26 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.learn.Ecommerce.Dto.UserDto;
+import com.learn.Ecommerce.entity.Role;
 import com.learn.Ecommerce.entity.User;
+import com.learn.Ecommerce.repository.RoleRepository;
 import com.learn.Ecommerce.repository.UserRepository;
 
 @Service
 public class UserServiceImpl  implements UserService {
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
    
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	private RoleRepository roleRepository;
     
 	@Override
 	public UserDto addUser(UserDto userDto) {
@@ -23,7 +32,10 @@ public class UserServiceImpl  implements UserService {
 		String id = randomUUID.toString();
 		userDto.setId(id);
 		
+		
 		User user = dtoToEntity(userDto);
+		Role role = roleRepository.findById(1).get();
+		user.setRole(role);
 		User savedUser = userRepository.save(user);
 		
 		UserDto savedDto = entityToDto(savedUser);
@@ -96,7 +108,7 @@ public class UserServiceImpl  implements UserService {
 		user.setId(userDto.getId());
 		user.setFirstName(userDto.getFirstName());
 		user.setLastName(userDto.getLastName());
-		user.setPassword(userDto.getPassword());
+		user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 		user.setAge(userDto.getAge());
 		user.setEmailId(userDto.getEmailId());
 		return user;

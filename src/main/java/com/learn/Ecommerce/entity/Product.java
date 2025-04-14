@@ -24,5 +24,6 @@ public class Product {
 	private String productDescription;
 	@Column(nullable = false)
 	private int productprice;
+	private String image;
 
 }
